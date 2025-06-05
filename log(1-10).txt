@@ -1,0 +1,224 @@
+
+============================================================
+📌 Sample #0
+❓ Question: what was the last year where this team was a part of the usl a-league?
+📋 Table (first 3 rows):
+   Year Division        League Regular Season         Playoffs  \
+0  2001        2  USL A-League   4th, Western    Quarterfinals   
+1  2002        2  USL A-League   2nd, Pacific        1st Round   
+2  2003        2  USL A-League   3rd, Pacific  Did not qualify   
+
+          Open Cup Avg. Attendance  
+0  Did not qualify           7,169  
+1  Did not qualify           6,260  
+2  Did not qualify           5,871  
+
+💬 Generated Code:
+ df = df[df["League"] == "USL A-League"]
+df = df["Year"]
+df = df.max()
+df
+✅ Predicted: 2004
+🎯 Ground Truth: ['2004']
+🧾 Result: ✅ Correct
+
+============================================================
+📌 Sample #1
+❓ Question: in what city did piotr's last 1st place finish occur?
+📋 Table (first 3 rows):
+   Year                    Competition              Venue Position  \
+0  2001      World Youth Championships  Debrecen, Hungary      2nd   
+1  2001      World Youth Championships  Debrecen, Hungary      1st   
+2  2001  European Junior Championships    Grosseto, Italy      1st   
+
+           Event    Notes  
+0          400 m    47.12  
+1   Medley relay  1:50.46  
+2  4x400 m relay  3:06.12  
+
+💬 Generated Code:
+ df = df[df["Position"] == "1st"]
+df = df.sort_values("Year")
+df = df.iloc[-1]
+df = df["Venue"]
+df
+✅ Predicted: Bangkok, Thailand
+🎯 Ground Truth: ['Bangkok, Thailand']
+🧾 Result: ✅ Correct
+
+============================================================
+📌 Sample #2
+❓ Question: who was the opponent in the first game of the season?
+📋 Table (first 3 rows):
+             Date         Opponent Venue Result Attendance      Scorers
+0  15 August 1987     Derby County  Away    0–1     17,204            —
+1  18 August 1987    Coventry City  Home    0–1     09,380            —
+2  22 August 1987  West Ham United  Home    2–2     08,073  Harford (2)
+
+💬 Generated Code:
+ df = df[df["Date"] == df["Date"].min()]
+df = df["Opponent"]
+df
+✅ Predicted: 21    Chelsea
+Name: Opponent, dtype: object
+🎯 Ground Truth: ['Derby County']
+🧾 Result: ❌ Wrong
+
+============================================================
+📌 Sample #3
+❓ Question: how many people stayed at least 3 years in office?
+📋 Table (first 3 rows):
+                   Name    Took office     Left office                  Party  \
+0  11  William McCreery  March 4, 1803   March 3, 1809  Democratic Republican   
+1  12   Alexander McKim  March 4, 1809   March 3, 1815  Democratic Republican   
+2  13   William Pinkney  March 4, 1815  April 18, 1816  Democratic Republican   
+
+                                        Notes/Events  
+0                                                     
+1                                                     
+2  Resigned to accept position as Minister Plenip...  
+
+💬 Generated Code:
+ df = df[df["Left office"].str[-4:].astype(int) - df["Took office"].str[-4:].astype(int) >= 3]
+df
+✅ Predicted:                      Name        Took office    Left office  \
+0  11    William McCreery      March 4, 1803  March 3, 1809   
+1  12     Alexander McKim      March 4, 1809  March 3, 1815   
+3  14        Peter Little  September 2, 1816  March 3, 1823   
+5  14        Peter Little      March 4, 1825  March 3, 1829   
+6  15  Benjamin C. Howard      March 4, 1829  March 3, 1833   
+
+                   Party Notes/Events  
+0  Democratic Republican               
+1  Democratic Republican               
+3  Democratic Republican               
+5                  Adams               
+6             Jacksonian               
+🎯 Ground Truth: ['4']
+🧾 Result: ❌ Wrong
+
+============================================================
+📌 Sample #4
+❓ Question: who is the first away team on the chart
+📋 Table (first 3 rows):
+  Tie no             Home team Score            Away team
+0     49  Dalsjöfors GoIF (WC)   1-4    Varbergs GIF (D3)
+1     50    Sjömarkens IF (D4)   1-4  BK Slätta Damm (D3)
+2     51         IF Tymer (D4)   0-3    Kållereds SK (D3)
+
+💬 Generated Code:
+ df = df.iloc[0]["Away team"]
+✅ Predicted: Varbergs GIF (D3)
+🎯 Ground Truth: ['Varbergs GIF']
+🧾 Result: ❌ Wrong
+
+============================================================
+📌 Sample #5
+❓ Question: which is deeper, lake tuz or lake palas tuzla?
+📋 Table (first 3 rows):
+  Name in English Name in Turkish Area (km2)  Depth  \
+0        Lake Van        Van Gölü   3755 km2  451 m   
+1        Lake Tuz        Tuz Gölü   1500 km2    2 m   
+2   Lake Beyşehir   Beyşehir Gölü    656 km2   10 m   
+
+  Location (districts and/or provinces)  
+0                           Van, Bitlis  
+1                Aksaray, Ankara, Konya  
+2            Beyşehir in Konya, Isparta  
+
+💬 Generated Code:
+ df = df[df["Name in English"].isin(["Lake Tuz", "Lake Palas Tuzla"])]
+df = df.astype({"Depth": float})
+df = df.sort_values("Depth", ascending=False)
+df = df.iloc[0]
+df = df["Name in English"]
+df
+❌ Execution Error: could not convert string to float: '2\xa0m': Error while type casting for column 'Depth'
+
+============================================================
+📌 Sample #6
+❓ Question: how many times did an italian cyclist win a round?
+📋 Table (first 3 rows):
+  Round Round    Circuit      Date      Pole Position       Fastest Lap  \
+0     1    R1      Jerez  18 March      Raymond Roche  Stéphane Mertens   
+1     1    R2      Jerez  18 March      Raymond Roche     Raymond Roche   
+2     2    R1  Donington  16 April  Giancarlo Falappa       Rob Phillis   
+
+   Winning Rider  
+0  Raymond Roche  
+1  Raymond Roche  
+2    Fred Merkel  
+
+💬 Generated Code:
+ df = df[df["Winning Rider"].str.contains("Italian")]
+df = df[df["Position"] == "1st"]
+df = df["Winning Rider"].count()
+df
+❌ Execution Error: 'Position'
+
+============================================================
+📌 Sample #7
+❓ Question: what was the first venue for the asian games?
+📋 Table (first 3 rows):
+   Year          Competition                   Venue  Position   Notes
+0  1996        Olympic Games  Atlanta, United States  36th (q)  5.55 m
+1  1998          Asian Games       Bangkok, Thailand       8th  6.07 m
+2  1999  World Championships          Seville, Spain  23rd (q)  6.40 m
+
+💬 Generated Code:
+ ```python
+df = df[df["Competition"] == "Asian Games"]
+df = df["Venue"]
+df = df.iloc[0]
+df
+```
+❌ Execution Error: invalid syntax (<string>, line 1)
+
+============================================================
+📌 Sample #8
+❓ Question: what is the difference in the number of temples between imabari and matsuyama?
+📋 Table (first 3 rows):
+  No.             Temple Honzon (main image) City/Town/Village  \
+0   1    Ryōzen-ji (霊山寺)        Shaka Nyorai            Naruto   
+1   2  Gokuraku-ji (極楽寺)        Amida Nyorai            Naruto   
+2   3    Konsen-ji (金泉寺)        Shaka Nyorai             Itano   
+
+             Prefecture  
+0  Tokushima Prefecture  
+1  Tokushima Prefecture  
+2  Tokushima Prefecture  
+
+💬 Generated Code:
+ df = df[df["City/Town/Village"].isin(["Imabari", "Matsuyama"])]
+df = df.groupby("City/Town/Village").size()
+df = df.diff().iloc[-1]
+df
+✅ Predicted: 2.0
+🎯 Ground Truth: ['2']
+🧾 Result: ❌ Wrong
+
+============================================================
+📌 Sample #9
+❓ Question: what was the only year keene won class aa?
+📋 Table (first 3 rows):
+  School Year        Class A     Class AA      Class AAA     Class AAAA  \
+0     1994-95         Menard  Van Alstyne    Cameron Yoe  Wichita Falls   
+1     1995-96            Era      Coahoma  Colorado City     Livingston   
+2     1996-97  Sulphur Bluff       Marion  Colorado City         Snyder   
+
+   Class AAAAA  
+0      Weslaco  
+1  Duncanville  
+2  Duncanville  
+
+💬 Generated Code:
+ ```python
+df = df[df["Class AA"] == "Keene"]
+df = df["School Year"].str[:4]
+df = df.iloc[0]
+df
+```
+❌ Execution Error: invalid syntax (<string>, line 1)
+
+============================================================
+🔚 Evaluation Summary: 2/10 correct → Accuracy: 20.0%

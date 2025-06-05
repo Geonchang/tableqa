@@ -1,0 +1,209 @@
+
+============================================================
+📌 Sample #10
+❓ Question: how many total points did the bombers score against the bc lions?
+📋 Table (first 3 rows):
+  Week     Date                      Opponent  Score Result Record
+0    1   July 9  vs. Saskatchewan Roughriders  31–21    Win    1–0
+1    2  July 16         at Montreal Concordes   36–0    Win    2–0
+2    3  July 24       vs. Hamilton Tiger-Cats  36–25   Loss    2–1
+
+💬 Generated Code:
+ df = df[df["Opponent"] == "vs. BC Lions"]
+df = df["Score"].str.split("–", expand=True)
+df = df.astype(int)
+df = df.sum().sum()
+df
+✅ Predicted: 45
+🎯 Ground Truth: ['58']
+🧾 Result: ❌ Wrong
+
+============================================================
+📌 Sample #11
+❓ Question: which is the first city listed alphabetically?
+📋 Table (first 3 rows):
+  Name of place Number of counties   Principal county Lower zip code
+0        Abbott                  1       Scott County          72944
+1          Abco                  1  Hot Spring County               
+2      Aberdeen                  1      Monroe County          72134
+
+💬 Generated Code:
+ df = df.sort_values("Name of place")
+df = df.iloc[0]
+df = df["Name of place"]
+df
+✅ Predicted: Abbott
+🎯 Ground Truth: ['Abbott']
+🧾 Result: ✅ Correct
+
+============================================================
+📌 Sample #12
+❓ Question: how many movies have links to other wikipedia pages about them?
+📋 Table (first 3 rows):
+   Year                  Title           Role Notes
+0  1991        Let Him Have It  Derek Bentley      
+1  1992  Death and the Compass    Alonso Zunz      
+2  1993              Anchoress         Priest      
+
+💬 Generated Code:
+ df = df[df["Notes"].str.contains("wikipedia")]
+df = df.shape[0]
+df
+✅ Predicted: 0
+🎯 Ground Truth: ['20']
+🧾 Result: ❌ Wrong
+
+============================================================
+📌 Sample #13
+❓ Question: in how many games did the winning team score more than 4 points?
+📋 Table (first 3 rows):
+       Home Team Score            Away Team        Date  Agg
+0       Aberdeen   7–1  Hamilton Academical  11-10-1978  8–1
+1  Airdrieonians   1–2             Arbroath  10-10-1978  2–3
+2     Ayr United   1–1              Falkirk  11-10-1978  3–1
+
+💬 Generated Code:
+ df = df[df["Score"].str.split("–").str[0].astype(int) > 4]
+df = df.shape[0]
+df
+✅ Predicted: 3
+🎯 Ground Truth: ['3']
+🧾 Result: ✅ Correct
+
+============================================================
+📌 Sample #14
+❓ Question: which album released by the band schnell fenster produced the most singles appearing on the australian peak chart?
+📋 Table (first 3 rows):
+   Year                     Title Peak chart positions\nAUS  \
+0  1988                 "Whisper"                        58   
+1  1988  "Love-Hate Relationship"                        81   
+2  1989           "This Illusion"                         —   
+
+  Peak chart positions\nNZ               Album  
+0                       42  The Sound Of Trees  
+1                       46  The Sound Of Trees  
+2                        —  The Sound Of Trees  
+
+💬 Generated Code:
+ df = df[df["Album"].str.contains("schnell fenster")]
+df = df[df["Peak chart positions\nAUS"] != "—"]
+df = df.astype({"Peak chart positions\nAUS": int})
+df = df.groupby("Album")["Peak chart positions\nAUS"].count().idxmax()
+df
+❌ Execution Error: 'Peak chart positions\nAUS'
+
+============================================================
+📌 Sample #15
+❓ Question: which model has the most in service?
+📋 Table (first 3 rows):
+              Model         Origin                   Type  \
+0  AM General HMMWV  United States  Light Utility Vehicle   
+1    Maxi-Ambulance  United States  Light Utility Vehicle   
+2        M939 truck  United States  Heavy Utility Vehicle   
+
+                                            Version               In Service  \
+0  M998A1\n\nM1038A1\n\nM1025A1\n\nM1025P1\n\nM1114                        -   
+1                                            M997A2                       19   
+2              M923\n\nM929\n\nM931\n\nM934\n\nM936  >20\n\n-\n\n-\n\n-\n\n-   
+
+                                               Notes  
+0  Divided into several variants and series, incl...  
+1  23 delivered to AFP on November 2011, PMC rece...  
+2  20 M923 delivered in 2010, several more of dif...  
+
+💬 Generated Code:
+ df = df[df["In Service"] != "-"]
+df = df.astype({"In Service": int})
+df = df.sort_values("In Service", ascending=False)
+df = df.iloc[0]
+df = df["Model"]
+df
+❌ Execution Error: invalid literal for int() with base 10: '>20\\n\\n-\\n\\n-\\n\\n-\\n\\n-': Error while type casting for column 'In Service'
+
+============================================================
+📌 Sample #16
+❓ Question: which ship in auckland had the fastest speed in knots?
+📋 Table (first 3 rows):
+          Name    Dates  Grt                           Propulsion      Port  \
+0   Arataki  i  1948-84   74   320 bhp diesel, 10 knots (19 km/h)             
+1  Arataki  ii  1984-99  143  1100 bhp diesel, 12 knots (22 km/h)    Timaru   
+2         Hipi  1942-56   39    100 bhp diesel, 8 knots (15 km/h)  Auckland   
+
+                 Notes  
+0  US Navy harbour tug  
+1          harbour tug  
+2      Towing lighters  
+
+💬 Generated Code:
+ df = df[df["Port"] == "Auckland"]
+df = df["Propulsion"].str.extract(r'(\d+)\s*knots')[0].astype(float)
+df = df.idxmax()
+df = df["Name"]
+df
+❌ Execution Error: invalid index to scalar variable.
+
+============================================================
+📌 Sample #17
+❓ Question: what counties had the least participants for the race?
+📋 Table (first 3 rows):
+  Rank             Name Nationality     Time
+0        Brahim Boulami     Morocco  8:17.73
+1         Reuben Kosgei       Kenya  8:18.63
+2       Stephen Cherono       Kenya  8:19.98
+
+💬 Generated Code:
+ df = df[df["Rank"] != ""]
+df = df["Nationality"].value_counts().idxmin()
+df
+✅ Predicted: France
+🎯 Ground Truth: ['Morocco', 'France', 'Spain']
+🧾 Result: ✅ Correct
+
+============================================================
+📌 Sample #18
+❓ Question: what's the number of parishes founded in the 1800s?
+📋 Table (first 3 rows):
+                              Parish     Locality    Parish Priest Founded  \
+0                            St Mary        Bacup  Fr Frank Thorpe    1852   
+1  Our Immaculate Mother & St Anselm    Whitworth  Fr Frank Thorpe    1860   
+2                          St Joseph  Stacksteads             ----    1947   
+
+  Closed  
+0   ----  
+1   ----  
+2   2005  
+
+💬 Generated Code:
+ df = df[df["Founded"].str.startswith("18")]
+df = df["Founded"]
+df = df.count()
+df
+✅ Predicted: 4
+🎯 Ground Truth: ['4']
+🧾 Result: ✅ Correct
+
+============================================================
+📌 Sample #19
+❓ Question: what club scored the only a total of 79 points?
+📋 Table (first 3 rows):
+  Position                    Club Played Points Wins Draws Losses Goals for  \
+0        1               Málaga CF     42     79   22    13      7        72   
+1        2  Atlético de Madrid B 1     42     74   21    11     10        73   
+2        3             CD Numancia     42     73   21    10     11        68   
+
+  Goals against Goal Difference  
+0            47             +25  
+1            51             +22  
+2            40             +28  
+
+💬 Generated Code:
+ df = df[df["Points"] == '79']
+df = df["Club"]
+df
+✅ Predicted: 0    Málaga CF
+Name: Club, dtype: object
+🎯 Ground Truth: ['Málaga CF']
+🧾 Result: ❌ Wrong
+
+============================================================
+🔚 Evaluation Summary: 4/10 correct → Accuracy: 40.0%

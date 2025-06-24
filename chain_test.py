@@ -126,37 +126,46 @@ def one_sample(i):
     return df_origin
 
 def pick_sorted_unique_numbers(n, m, seed=42):
-    if m > n:
-        raise ValueError("m은 n보다 작거나 같아야 합니다.")
-    
     random.seed(seed)
     numbers = random.sample(range(n), m)
     return sorted(numbers)
 
 
 # %%
-pick_sorted_unique_numbers(len(dataset["train"]), 10)
-[409, 1679, 1824, 2286, 3657, 4012, 4506, 8935, 10476, 11087]
+samples = [409, 1679, 1824, 2286, 3657, 4012, 4506, 8935, 10476, 11087]
+samples = [
+    106, 409, 434, 488, 520, 711, 1424, 1519, 1535, 1584,
+    1674, 1679, 1824, 2045, 2286, 2547, 2615, 3257, 3527, 3582,
+    3611, 3657, 3811, 4012, 4333, 4506, 4552, 4557, 5514, 5574,
+    5635, 5881, 6224, 6873, 6912, 6924, 7359, 7527, 8279, 8785,
+    8928, 8935, 9195, 9654, 9674, 9863, 9891, 10476, 10647, 11087
+]
+pick_sorted_unique_numbers(len(dataset["train"]), 50)
 
-
-
-# %% 4506
+# %% 520
 """
-Question: which competition has the least notes?
-Ground Truth: ['World Youth Championships']
-   Year                    Competition               Venue  Position   Notes
-0  2003      World Youth Championships  Sherbrooke, Canada       7th  1.75 m
-1  2004     World Junior Championships     Grosseto, Italy       9th  1.80 m
-2  2005  European Junior Championships   Kaunas, Lithuania       4th  1.82 m
-3  2009  European Indoor Championships        Turin, Italy       5th  1.92 m
-4  2010     World Indoor Championships         Doha, Qatar  10th (q)  1.89 m
+Question: what was the name of the mission previous to cosmos 300?
+Ground Truth: ['Luna 15']
+         Launch date Operator               Name Sample origin  \
+0      June 14, 1969           Luna E-8-5 No.402      The Moon   
+1      July 13, 1969                     Luna 15      The Moon   
+2  23 September 1969                  Cosmos 300      The Moon   
+3    22 October 1969                  Cosmos 305      The Moon   
+4    6 February 1970           Luna E-8-5 No.405      The Moon   
+
+  Samples returned Recovery date                        Mission result  
+0             None             -               Failure\nLaunch failure  
+1             None             -     Failure\nCrash-landed on the Moon  
+2             None             -  Failure\nFailed to leave Earth orbit  
+3             None             -  Failure\nFailed to leave Earth orbit  
+4             None             -               Failure\nLaunch failure  
 
 문제
-1. 1.75 m에서 1.75를 뽑아내야 함
+1. score를 home/away team을 이해하고 parsing해야 함
+   해당 사례에서는 home score away 컬럼순이었는데 반대라면?
 """
 
-df = one_sample(4506).copy()
-df['NoteValue'] = df['Notes'].str.extract(r'([0-9.]+)').astype(float)
-df.loc[df['NoteValue'].idxmin(), 'Competition']
-
-# %%
+idx = 5
+print(samples[idx])
+df = one_sample(samples[idx]).copy()
+df

@@ -65,6 +65,9 @@ df = pd.DataFrame(rows, columns=columns)
 df.head()
 
 # %%
-cosql = load_dataset("cosql", trust_remote_code=True)
-cosql
+spider2 = load_dataset("xlangai/spider2-lite", trust_remote_code=True)
+spider2
+
+# %%
+spider2['train'][0]
 # %%

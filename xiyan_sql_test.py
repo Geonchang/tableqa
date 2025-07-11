@@ -3,6 +3,8 @@ import re
 import torch
 import sqlite3
 import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -183,7 +185,7 @@ wikitablequestions = load_dataset("wikitablequestions", trust_remote_code=True)
 
 # %%
 sample = wikitablequestions['train'][0]
-result = evaluate_table_qa_sample(sample)
+result = evaluate_table_qa_sample(sample, debug=True)
 result
 
 # %%
@@ -214,7 +216,7 @@ label_1_data
 
 # %%
 ans_cnt = 0
-for i, sample in enumerate(label_1_data):
+for i, sample in enumerate(test_data):
     print(i, end=' ')
     result = evaluate_table_qa_sample(sample)
     ans = is_correct_answer(result, sample['answers'])
@@ -223,3 +225,62 @@ for i, sample in enumerate(label_1_data):
 
 # %%
 ans_cnt
+
+# %%
+result_txt_path = "xiyan_sql_test_result_3b.txt"
+
+result_dict = {}
+with open(result_txt_path, "r", encoding="utf-8") as f:
+    lines = f.readlines()
+
+i = 0
+while i < len(lines):
+    line = lines[i].strip()
+
+    # 정상 줄: "0 True" 또는 "1 False"
+    if line and line[0].isdigit() and ("True" in line or "False" in line):
+        idx, value = line.split()
+        result_dict[int(idx)] = value == "True"
+        i += 1
+
+    # 에러 + 다음 줄에 결과
+    elif line and line[0].isdigit() and "SQL 실행 오류" in line:
+        idx = int(line.split()[0])
+        i += 1
+        if i < len(lines):
+            value = lines[i].strip()
+            result_dict[idx] = value == "True"
+        i += 1
+
+    else:
+        i += 1  # 혹시 모를 빈 줄/예외 대응
+
+# %%
+def add_pass_fail(example, idx):
+    return {"passed_3b": result_dict.get(idx, None)}  # None은 결과 없음
+
+test_data = test_data.map(add_pass_fail, with_indices=True)
+
+# %%
+df = test_data.to_pandas()
+summary = df.groupby("label")["passed_3b"].agg(
+    total="count",
+    correct="sum"
+).reset_index()
+summary["accuracy"] = summary["correct"] / summary["total"]
+summary
+
+# %%
+matplotlib.rcParams['font.family'] = 'Malgun Gothic'
+matplotlib.rcParams['axes.unicode_minus'] = False
+
+plt.figure(figsize=(8, 4))
+plt.bar(summary["label"], summary["accuracy"])
+plt.title("Label별 정확도 (3B 모델)")
+plt.xlabel("Label")
+plt.ylabel("정답 비율")
+plt.xticks(summary["label"])
+plt.ylim(0, 1)
+plt.show()
+
+# %%

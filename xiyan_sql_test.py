@@ -1,6 +1,6 @@
 # %%
 import re
-import torch
+# import torch
 import sqlite3
 import pandas as pd
 import matplotlib
@@ -51,6 +51,49 @@ nl2sqlite_template_cn = """你是一名{dialect}专家，现在需要阅读并�
 【用户问题】
 {question}
 ```sql"""
+
+nl2sqlite_template_en = """You are an expert in {dialect}.
+Please read and understand the following [Database Schema] description and the [Reference Information] (if provided),
+and then use your knowledge of {dialect} to generate an SQL query that answers the [User Question].
+[User Question]
+{question}
+[Database Schema]
+{db_schema}
+[Reference Information]
+{evidence}
+[User Question]
+{question}
+```sql"""
+
+to_be1 = """You are an expert in {dialect}.
+Please read and understand the following [Database Schema], [Table Details],
+and the [Reference Information] (if provided), all of which are provided for reference.
+Then, use your knowledge of {dialect} to generate an SQL query that answers the [User Question].
+[User Question]
+{question}
+[Database Schema]
+{db_schema}
+[Table Details]
+{table_info}
+[Reference Information]
+{evidence}
+[User Question]
+{question}
+```sql"""
+
+to_be2 = """You are a Table Question Answering expert.
+Given the [User Question], and the provided [Table] and [Reference Information] (if any),
+directly generate the correct answer in natural language.
+[User Question]
+{question}
+[Table]
+{table}
+[Reference Information]
+{evidence}
+[User Question]
+{question}
+"""
+
 
 ## dialects -> ['SQLite', 'PostgreSQL', 'MySQL']
 prompt = nl2sqlite_template_cn.format(dialect="", db_schema="", question="", evidence="")
@@ -227,7 +270,9 @@ for i, sample in enumerate(test_data):
 ans_cnt
 
 # %%
-result_txt_path = "xiyan_sql_test_result_3b.txt"
+
+model_size = '32b'
+result_txt_path = f"xiyan_sql_test_result_{model_size}.txt"
 
 result_dict = {}
 with open(result_txt_path, "r", encoding="utf-8") as f:
@@ -257,13 +302,13 @@ while i < len(lines):
 
 # %%
 def add_pass_fail(example, idx):
-    return {"passed_3b": result_dict.get(idx, None)}  # None은 결과 없음
+    return {f"passed_{model_size}": result_dict.get(idx, None)}  # None은 결과 없음
 
 test_data = test_data.map(add_pass_fail, with_indices=True)
 
 # %%
 df = test_data.to_pandas()
-summary = df.groupby("label")["passed_3b"].agg(
+summary = df.groupby("label")[f"passed_{model_size}"].agg(
     total="count",
     correct="sum"
 ).reset_index()
@@ -276,7 +321,7 @@ matplotlib.rcParams['axes.unicode_minus'] = False
 
 plt.figure(figsize=(8, 4))
 plt.bar(summary["label"], summary["accuracy"])
-plt.title("Label별 정확도 (3B 모델)")
+plt.title(f"Label별 정확도 ({model_size.upper()} 모델)")
 plt.xlabel("Label")
 plt.ylabel("정답 비율")
 plt.xticks(summary["label"])

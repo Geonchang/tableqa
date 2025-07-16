@@ -1,6 +1,6 @@
 # %%
 import re
-# import torch
+import torch
 import sqlite3
 import pandas as pd
 import matplotlib
@@ -10,6 +10,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # %%
 model_name = "XGenerationLab/XiYanSQL-QwenCoder-3B-2502"
+model_name = "XGenerationLab/XiYanSQL-QwenCoder-32B-2504"
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     torch_dtype=torch.bfloat16,

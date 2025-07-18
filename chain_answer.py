@@ -30,19 +30,26 @@ df.iloc[-1]["IEC\\nWorld Plugs\\nType1"]
 """
 Question: when was the first win by decision?
 Ground Truth: ['August 15, 2009']
-        Ship Name   Desig     Status  \
-9   San Francisco   CA-38  Undamaged   
-11        Detroit    CL-8  Undamaged   
-12        Phoenix   CL-46  Undamaged   
-16          Allen   DD-66  Undamaged   
-17         Schley  DD-103  Undamaged   
+   Res. Record        Opponent                Method  \
+0   Win   12-3      Mike Hayes            KO (punch)   
+1   Win   11–3  Nick Moghadden         TKO (punches)   
+2  Loss   10–3   Guto Inocente  Decision (unanimous)   
+3   Win   10–2     Brett Albee         TKO (strikes)   
+4  Loss    9–2   Lavar Johnson          KO (punches)   
 
-                                                Notes Links  
-9   Under overhaul at the Pearl Harbor Navy Yard b...  [10]  
-11               Moored at berth F-13, aft of Raleigh  [12]  
-12                                          Berth C-6  [13]  
-16  Moored to Chew, Solace nearby to port, berth X-5.  [17]  
-17  Moored in a nest of ships undergoing overhaul ...  [18]  
+                                          Event                Date Round  \
+0                  KSW 25: Khalidov vs. Sakurai    December 7, 2013     1   
+1                                   Bellator 99  September 13, 2013     1   
+2              Strikeforce: Barnett vs. Cormier        May 19, 2012     3   
+3                   Strikeforce: Diaz vs. Daley       April 9, 2011     1   
+4  Strikeforce Challengers: Bowling vs. Voelker    October 22, 2010     1   
+
+   Time                              Location                    Notes  
+0  1:12                       Wrocław, Poland                           
+1  3:22   Temecula, California, United States           Bellator debut  
+2  5:00   San Jose, California, United States  Light Heavyweight debut  
+3  1:46  San Diego, California, United States                           
+4  2:17     Fresno, California, United States 
 
 문제
 1. Column 정보만으론 Decision과 관련된 Column이 Method인걸 알기 어려움
@@ -53,6 +60,8 @@ df = one_sample(409).copy()
 df = df[df["Method"].str.contains('Decision')]
 df.loc[pd.to_datetime(df["Date"]).idxmin(), 'Date']
 
+# %%
+df
 
 # %% 434
 """
@@ -333,3 +342,4 @@ df = one_sample(11087).copy()
 df['number_num'] = df['number'].astype(int)
 var1 = df.loc[df['symbol'] == 'Co', 'number_num'].values[0]
 df.loc[df['number_num'] == var1 - 1, 'symbol'].values[0]
+# %%

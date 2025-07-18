@@ -66,7 +66,7 @@ Answer:"""
     for attempt in range(max_retry):
         try:
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o",
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
@@ -109,12 +109,18 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 # 1. 결과 파일 읽기
-with open("question_difficulty_result.txt", "r") as f:
+with open("question_difficulty_result_gpt4o.txt", "r") as f:
     lines = f.readlines()
 
+# %%
+
+for line in lines:
+    print( line.strip().split()[1] )
+# %%
 # 2. 숫자만 추출
 labels = [int(line.strip().split()[1]) for line in lines]
 
+# %%
 # 3. 개수 세기
 counts = Counter(labels)
 sorted_counts = [counts.get(i, 0) for i in [1, 2, 3]]
